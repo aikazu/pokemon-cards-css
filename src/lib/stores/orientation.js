@@ -1,6 +1,10 @@
 import { readable } from "svelte/store";
 
 
+/**
+ * @param {DeviceOrientationEvent} [e]
+ * @returns {{ alpha: number, beta: number, gamma: number }}
+ */
 const getRawOrientation = function(e) {
   if ( !e ) {
     return { alpha: 0, beta: 0, gamma: 0 };
@@ -9,6 +13,10 @@ const getRawOrientation = function(e) {
   }
 }
 
+/**
+ * @param {DeviceOrientationEvent} [e]
+ * @returns {{ absolute: { alpha: number, beta: number, gamma: number }, relative: { alpha: number, beta: number, gamma: number } }}
+ */
 const getOrientationObject = (e) => {
   const orientation = getRawOrientation(e);
   return {

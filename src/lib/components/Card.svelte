@@ -1,9 +1,10 @@
 <script>
   import { spring } from "svelte/motion";
-  import { onMount } from "svelte";
+  import { onMount, onDestroy } from "svelte";
   import { activeCard } from "../stores/activeCard.js";
   import { orientation, resetBaseOrientation } from "../stores/orientation.js";
-  import { clamp, round, adjust } from "../helpers/Math.js";
+  import { clamp, round } from "../helpers/Math.js";
+  import { getPointerSpringUpdate, getOrientationSpringUpdate } from "../helpers/cardInteraction.js";
 
   // data / pokemon props
   export let id = "";
@@ -90,42 +91,15 @@
 
     interacting = true;
 
+    let clientX = e.clientX;
+    let clientY = e.clientY;
     if (e.type === "touchmove") {
-      e.clientX = e.touches[0].clientX;
-      e.clientY = e.touches[0].clientY;
+      clientX = e.touches[0].clientX;
+      clientY = e.touches[0].clientY;
     }
 
-    const $el = e.target;
-    const rect = $el.getBoundingClientRect(); // get element's current size/position
-    const absolute = {
-      x: e.clientX - rect.left, // get mouse position from left
-      y: e.clientY - rect.top, // get mouse position from right
-    };
-    const percent = {
-      x: clamp(round((100 / rect.width) * absolute.x)),
-      y: clamp(round((100 / rect.height) * absolute.y)),
-    };
-    const center = {
-      x: percent.x - 50,
-      y: percent.y - 50,
-    };
-
-    // Store the latest interaction data
-    pendingSpringUpdate = {
-      background: {
-        x: adjust(percent.x, 0, 100, 37, 63),
-        y: adjust(percent.y, 0, 100, 33, 67),
-      },
-      rotate: {
-        x: round(-(center.x / 3.5)),
-        y: round(center.y / 3.5),
-      },
-      glare: {
-        x: round(percent.x),
-        y: round(percent.y),
-        o: 1,
-      }
-    };
+    const rect = e.currentTarget.getBoundingClientRect();
+    pendingSpringUpdate = getPointerSpringUpdate(clientX, clientY, rect);
 
     // Schedule spring update for next frame if not already scheduled
     if (rafId === null) {
@@ -176,21 +150,22 @@
     } else {
       $activeCard = thisCard;
       resetBaseOrientation();
-      // @ts-ignore
-      gtag("event", "select_item", {
-        item_list_id: "cards_list",
-        item_list_name: "Pokemon Cards",
-        items: [
-          {
-            item_id: id,
-            item_name: name,
-            item_category: set,
-            item_category2: supertype,
-            item_category3: subtypes,
-            item_category4: rarity
-          }
-        ]
-      });
+      if (typeof window.gtag === "function") {
+        window.gtag("event", "select_item", {
+          item_list_id: "cards_list",
+          item_list_name: "Pokemon Cards",
+          items: [
+            {
+              item_id: id,
+              item_name: name,
+              item_category: set,
+              item_category2: supertype,
+              item_category3: subtypes,
+              item_category4: rarity
+            }
+          ]
+        });
+      }
 
     }
   };
@@ -198,6 +173,14 @@
   const deactivate = (e) => {
     interactEnd();
     $activeCard = undefined;
+  };
+
+  const handleKeydown = (e) => {
+    if (e.key === "Escape" && $activeCard && $activeCard === thisCard) {
+      e.preventDefault();
+      deactivate(e);
+      e.currentTarget.blur();
+    }
   };
 
   const reposition = (e) => {
@@ -261,9 +244,13 @@
     if ($activeCard && $activeCard === thisCard) {
       popover();
       active = true;
+      // only listen for scroll when THIS card is the active popover
+      window.addEventListener("scroll", reposition, { passive: true });
     } else {
       retreat();
       active = false;
+      // stop listening when card is no longer active
+      window.removeEventListener("scroll", reposition);
     }
   }
 
@@ -308,28 +295,8 @@
   }
 
   const orientate = (e) => {
-
-    const x = e.relative.gamma;
-    const y = e.relative.beta;
-    const limit = { x: 16, y: 18 };
-
-    const degrees = { 
-      x: clamp(x, -limit.x, limit.x), 
-      y: clamp(y, -limit.y, limit.y) 
-    };
-
-    updateSprings({
-      x: adjust(degrees.x, -limit.x, limit.x, 37, 63),
-      y: adjust(degrees.y, -limit.y, limit.y, 33, 67),
-    },{
-      x: round(degrees.x * -1),
-      y: round(degrees.y),
-    },{
-      x: adjust(degrees.x, -limit.x, limit.x, 0, 100),
-      y: adjust(degrees.y, -limit.y, limit.y, 0, 100),
-      o: 1,
-    });
-
+    const springUpdate = getOrientationSpringUpdate(e.relative.gamma, e.relative.beta);
+    updateSprings(springUpdate.background, springUpdate.rotate, springUpdate.glare);
   };
 
   const updateSprings = ( background, rotate, glare ) => {
@@ -354,11 +321,12 @@
     }
   }
 
-  document.addEventListener("visibilitychange", (e) => {
+  const handleVisibilityChange = () => {
     isVisible = document.visibilityState === "visible";
     endShowcase();
     reset();
-  });
+  };
+  document.addEventListener("visibilitychange", handleVisibilityChange);
 
   const imageLoader = (e) => {
     loading = false;
@@ -418,9 +386,21 @@
       }, 2000);
     }
   });
+
+  onDestroy(() => {
+    document.removeEventListener("visibilitychange", handleVisibilityChange);
+    window.removeEventListener("scroll", reposition);
+    if (rafId !== null) {
+      cancelAnimationFrame(rafId);
+      rafId = null;
+    }
+    clearTimeout(repositionTimer);
+    clearInterval(showcaseInterval);
+    clearTimeout(showcaseTimerStart);
+    clearTimeout(showcaseTimerEnd);
+  });
 </script>
 
-<svelte:window on:scroll={reposition} />
 
 <div
   class="card {types} / interactive / "
@@ -445,7 +425,9 @@
       on:pointermove={interact}
       on:mouseout={interactEnd}
       on:blur={deactivate}
+      on:keydown={handleKeydown}
       aria-label="Expand the Pokemon Card; {name}."
+      aria-expanded={active}
       tabindex="0"
       >
       <img

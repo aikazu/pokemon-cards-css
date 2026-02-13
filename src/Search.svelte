@@ -24,10 +24,12 @@
 		clearTimeout( queryTimer );
 		queryTimer = setTimeout(() => {
 
+			const sanitizedQuery = query.replace(/['"\\()]/g, "");
+
 			pokemon.card
 
 				.where({ 
-					q: `( set.id:swsh* AND name:"*${query}*" )`,
+					q: `( set.id:swsh* AND name:"*${sanitizedQuery}*" )`,
 					select: `id,name,number,supertype,subtypes,rarity,images,types,set`,
 					orderBy: `-set.releaseDate,-number`,
           pageSize: 36
@@ -53,19 +55,21 @@
 
 			  })
         
-        .catch((a,b,c) => {
+        .catch((error) => {
+          console.error("Card search failed:", error);
           queryResult = [];
 					loadingQuery = false;
           isError = true;
         });
 
-        // @ts-ignore
-        gtag("event", "search", {
-          search_term: query
-        });
+        if (typeof window.gtag === "function") {
+          window.gtag("event", "search", {
+            search_term: query
+          });
+        }
 
 
-		},666);
+		}, 666); // debounce delay before firing API search
 	};
 
   $: usableQuery = query.length > 2;

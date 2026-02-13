@@ -87,9 +87,9 @@
 		:global( .card-grid > .card:nth-child(n+19) ) {
 			grid-row: auto;
 			grid-column: auto;
-			transform: none!important;
-			left: 0!important;
-			top: 0!important;
+			transform: none;
+			left: 0;
+			top: 0;
 		}
 
 	}
@@ -117,7 +117,7 @@
 	}
 
 	:global( .card-grid > .card.active ) {
-		transform: translate3d(0, 0, 0.1px)!important;
+		transform: translate3d(0, 0, 0.1px);
 	}
 	
 </style>
