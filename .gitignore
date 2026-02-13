@@ -11,6 +11,7 @@ node_modules
 dist
 dist-ssr
 *.local
+package-lock.json
 public/**/tests
 public/img/foils/
 
@@ -24,3 +25,7 @@ public/img/foils/
 *.njsproj
 *.sln
 *.sw?
+
+AGENTS.md
+PLAN.md
+TODO.md
