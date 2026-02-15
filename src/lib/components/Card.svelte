@@ -31,8 +31,8 @@
   }
 
   const cosmosPosition = { 
-    x: Math.floor( randomSeed.x * 734 ), 
-    y: Math.floor( randomSeed.y * 1280 ) 
+    x: Math.floor( randomSeed.x * 734 ), // Pokemon card image width in pixels
+    y: Math.floor( randomSeed.y * 1280 ) // Pokemon card image height in pixels
   };
 
   let isTrainerGallery = false;
@@ -53,8 +53,8 @@
   let loading = true;
   let isVisible = document.visibilityState === "visible";
 
-  const springInteractSettings = { stiffness: 0.066, damping: 0.25 };
-  const springPopoverSettings = { stiffness: 0.033, damping: 0.45 };
+  const springInteractSettings = { stiffness: 0.066, damping: 0.25 }; // Spring physics for card interaction feel
+  const springPopoverSettings = { stiffness: 0.033, damping: 0.45 }; // Spring physics for popover animation (slower, bouncier)
   let springRotate = spring({ x: 0, y: 0 }, springInteractSettings);
   let springGlare = spring({ x: 50, y: 50, o: 0 }, springInteractSettings);
   let springBackground = spring({ x: 50, y: 50 }, springInteractSettings);
@@ -117,7 +117,7 @@
     }
   };
 
-  const interactEnd = (e, delay = 500) => {
+  const interactEnd = (e, delay = 500) => { // Default delay before snap-back animation
     // Cancel any pending animation frame
     if (rafId !== null) {
       cancelAnimationFrame(rafId);
@@ -126,8 +126,8 @@
     pendingSpringUpdate = null;
 
     setTimeout(function () {
-      const snapStiff = 0.01;
-      const snapDamp = 0.06;
+      const snapStiff = 0.01; // Soft spring for card returning to rest
+      const snapDamp = 0.06; // Soft spring for card returning to rest
       interacting = false;
 
       springRotate.stiffness = snapStiff;
@@ -189,7 +189,7 @@
       if ($activeCard && $activeCard === thisCard) {
         setCenter();
       }
-    }, 300);
+    }, 300); // Debounce delay for scroll repositioning
   };
 
   const setCenter = () => {
@@ -211,12 +211,12 @@
     let delay = 100;
     let scaleW = (window.innerWidth / rect.width) * 0.9;
     let scaleH = (window.innerHeight / rect.height) * 0.9;
-    let scaleF = 1.75;
+    let scaleF = 1.75; // Maximum scale factor for card popover
     setCenter();
     if (firstPop) {
-      delay = 1000;
+      delay = 1000; // Extra delay on first popover (allows spin animation)
       springRotateDelta.set({
-        x: 360,
+        x: 360, // Full rotation degrees for first popover spin
         y: 0,
       });
     }
@@ -326,7 +326,6 @@
     endShowcase();
     reset();
   };
-  document.addEventListener("visibilitychange", handleVisibilityChange);
 
   const imageLoader = (e) => {
     loading = false;
@@ -340,6 +339,8 @@
 
   onMount(() => {
 
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+
     // set the front image on mount so that
     // the lazyloading can work correctly
     front_img = img_base + img;
@@ -348,8 +349,8 @@
     // for showcase card
     if (showcase && isVisible) {
       let showTimer;
-      const s = 0.02;
-      const d = 0.5;
+      const s = 0.02; // Showcase spring settings (very slow, smooth)
+      const d = 0.5; // Showcase spring settings (very slow, smooth)
       let r = 0;
       showcaseTimerStart = setTimeout(() => {
         interacting = true;
@@ -362,7 +363,7 @@
         springBackground.damping = d;
         if (isVisible) {
           showcaseInterval = setInterval(function () {
-            r += 0.05;
+            r += 0.05; // Showcase rotation increment per interval tick
             springRotate.set({ x: Math.sin(r) * 25, y: Math.cos(r) * 25 });
             springGlare.set({
               x: 55 + Math.sin(r) * 55,
@@ -373,17 +374,17 @@
               x: 20 + Math.sin(r) * 20,
               y: 20 + Math.cos(r) * 20,
             });
-          }, 20);
+          }, 20); // Showcase interval milliseconds (50fps)
           showcaseTimerEnd = setTimeout(() => {
             clearInterval(showcaseInterval);
             interactEnd(null, 0);
-          }, 4000);
+          }, 4000); // Showcase animation duration in ms
         } else {
           interacting = false;
           active = false;
           return;
         }
-      }, 2000);
+      }, 2000); // Delay before showcase animation starts
     }
   });
 
