@@ -33,7 +33,7 @@ export const getPointerSpringUpdate = (clientX, clientY, rect) => {
       x: round(percent.x),
       y: round(percent.y),
       o: 1,
-    }
+    },
   };
 };
 
@@ -46,7 +46,7 @@ export const getOrientationSpringUpdate = (gamma, beta) => {
   const limit = { x: 16, y: 18 };
   const degrees = {
     x: clamp(gamma, -limit.x, limit.x),
-    y: clamp(beta, -limit.y, limit.y)
+    y: clamp(beta, -limit.y, limit.y),
   };
 
   return {
@@ -62,6 +62,6 @@ export const getOrientationSpringUpdate = (gamma, beta) => {
       x: adjust(degrees.x, -limit.x, limit.x, 0, 100),
       y: adjust(degrees.y, -limit.y, limit.y, 0, 100),
       o: 1,
-    }
+    },
   };
 };
