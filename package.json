@@ -7,14 +7,16 @@
     "dev": "vite --host",
     "build": "vite build",
     "preview": "vite preview",
-    "format": "bunx prettier --write 'src/**/*.{js,svelte,json}'",
-    "format:check": "bunx prettier --check 'src/**/*.{js,svelte,json}'"
+    "format": "prettier --plugin prettier-plugin-svelte --write 'src/**/*.{js,svelte,json}'",
+    "format:check": "prettier --plugin prettier-plugin-svelte --check 'src/**/*.{js,svelte,json}'"
   },
   "dependencies": {
     "pokemontcgsdk": "^2.0.0"
   },
   "devDependencies": {
     "@sveltejs/vite-plugin-svelte": "^1.1.0",
+    "prettier": "^3.8.1",
+    "prettier-plugin-svelte": "^3.4.1",
     "svelte": "^3.52.0",
     "vite": "^3.2.0"
   }

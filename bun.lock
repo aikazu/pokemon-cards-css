@@ -4,9 +4,13 @@
   "workspaces": {
     "": {
       "name": "pokemon-deck-builder",
+      "dependencies": {
+        "pokemontcgsdk": "^2.0.0",
+      },
       "devDependencies": {
         "@sveltejs/vite-plugin-svelte": "^1.1.0",
-        "pokemontcgsdk": "^2.0.0",
+        "prettier": "^3.8.1",
+        "prettier-plugin-svelte": "^3.4.1",
         "svelte": "^3.52.0",
         "vite": "^3.2.0",
       },
@@ -100,6 +104,10 @@
     "pokemontcgsdk": ["pokemontcgsdk@2.0.0", "", { "dependencies": { "axios": "^0.21.1", "qs": "^6.9.6" } }, "sha512-RKSQ0sdR+WeawGHq6AwyprGD7btfDHTplNsiKTah+yd90XuL1dh8eqOYfam/VaJolam/061ITaLAPgPwyXS/EA=="],
 
     "postcss": ["postcss@8.4.18", "", { "dependencies": { "nanoid": "^3.3.4", "picocolors": "^1.0.0", "source-map-js": "^1.0.2" } }, "sha512-Wi8mWhncLJm11GATDaQKobXSNEYGUHeQLiQqDFG1qQ5UTDPTEvKw0Xt5NsTpktGTwLps3ByrWsBrG0rB8YQ9oA=="],
+
+    "prettier": ["prettier@3.8.1", "", { "bin": { "prettier": "bin/prettier.cjs" } }, "sha512-UOnG6LftzbdaHZcKoPFtOcCKztrQ57WkHDeRD9t/PTQtmT0NHSeWWepj6pS0z/N7+08BHFDQVUrfmfMRcZwbMg=="],
+
+    "prettier-plugin-svelte": ["prettier-plugin-svelte@3.4.1", "", { "peerDependencies": { "prettier": "^3.0.0", "svelte": "^3.2.0 || ^4.0.0-next.0 || ^5.0.0-next.0" } }, "sha512-xL49LCloMoZRvSwa6IEdN2GV6cq2IqpYGstYtMT+5wmml1/dClEoI0MZR78MiVPpu6BdQFfN0/y73yO6+br5Pg=="],
 
     "qs": ["qs@6.11.0", "", { "dependencies": { "side-channel": "^1.0.4" } }, "sha512-MvjoMCJwEarSbUYk5O+nmoSzSutSsTwF85zcHPQ9OrlFoZOYIjaqBAJIqIXjptyD5vThxGq52Xu/MaJzRkIk4Q=="],
 
