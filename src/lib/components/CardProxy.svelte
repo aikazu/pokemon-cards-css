@@ -1,6 +1,6 @@
 <script>
-  import altArts from "./alternate-arts.json";
-  import promos from "./promos.json";
+  import altArts from "../data/alternate-arts.json";
+  import promos from "../data/promos.json";
 	import Card from "./Card.svelte";
 
   // data / pokemon props
