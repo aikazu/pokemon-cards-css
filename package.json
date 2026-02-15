@@ -1,12 +1,14 @@
 {
   "name": "pokemon-deck-builder",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite --host",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "format": "bunx prettier --write 'src/**/*.{js,svelte,json}'",
+    "format:check": "bunx prettier --check 'src/**/*.{js,svelte,json}'"
   },
   "dependencies": {
     "pokemontcgsdk": "^2.0.0"
