@@ -32,11 +32,18 @@ const getOrientationObject = (e) => {
 let firstReading = true;
 let baseOrientation = getRawOrientation();
 
+/**
+ * reset the base orientation to the current raw orientation
+ * @returns {void}
+ */
 export const resetBaseOrientation = () => {
   firstReading = true;
   baseOrientation = getRawOrientation();
 }
 
+/**
+ * @type {import("svelte/store").Readable<{ absolute: { alpha: number, beta: number, gamma: number }, relative: { alpha: number, beta: number, gamma: number } }>}
+ */
 export const orientation = readable( getOrientationObject(), function start( set ) {
 
   // https://developer.mozilla.org/en-US/docs/Web/API/Window/ondeviceorientation
