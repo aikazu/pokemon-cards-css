@@ -81,9 +81,10 @@
 
 <section class="search-area">
 
+  <label for="search" class="sr-only">Search Pokemon cards</label>
   <input type="search" name="search" id="search" bind:value={query} placeholder="eg: Morpeko or Marnie" />
 
-  <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="1.25" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="1.25" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
     <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
     <path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0"></path>
     <path d="M21 21l-6 -6"></path>
@@ -155,6 +156,18 @@
     backdrop-filter: blur(5px);
     z-index: 999;
 
+  }
+
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
   }
 
   @media screen and ( min-width: 900px ) {
