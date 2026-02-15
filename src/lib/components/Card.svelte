@@ -7,22 +7,35 @@
   import { getPointerSpringUpdate, getOrientationSpringUpdate } from "../helpers/cardInteraction.js";
 
   // data / pokemon props
+  /** @type {String} */
   export let id = "";
+  /** @type {String} */
   export let name = "";
+  /** @type {String} */
   export let number = "";
+  /** @type {String} */
   export let set = "";
+  /** @type {String|Array} */
   export let types = "";
+  /** @type {String|Array} */
   export let subtypes = "basic";
+  /** @type {String} */
   export let supertype = "pokémon";
+  /** @type {String} */
   export let rarity = "common";
 
   // image props
+  /** @type {String} */
   export let img = "";
+  /** @type {String} */
   export let back = "https://tcg.pokemon.com/assets/img/global/tcg-card-back-2x.jpg";
+  /** @type {String} */
   export let foil = "";
+  /** @type {String} */
   export let mask = "";
 
   // context/environment props
+  /** @type {Boolean} */
   export let showcase = false;
 
   const randomSeed = {
@@ -67,6 +80,9 @@
   let showcaseTimerEnd;
   let showcaseRunning = showcase;
 
+  /**
+   * stops the showcase animation
+   */
   const endShowcase = () => {
     if (showcaseRunning) {
       clearTimeout(showcaseTimerEnd);
@@ -76,6 +92,10 @@
     }
   };
 
+  /**
+   * handle the pointer move event
+   * @param {any} e the event
+   */
   const interact = (e) => {
     
     endShowcase();
@@ -117,6 +137,11 @@
     }
   };
 
+  /**
+   * handle the pointer end event
+   * @param {any} e the event
+   * @param {Number} delay delay before snapping back
+   */
   const interactEnd = (e, delay = 500) => { // Default delay before snap-back animation
     // Cancel any pending animation frame
     if (rafId !== null) {
@@ -144,6 +169,10 @@
     }, delay);
   };
 
+  /**
+   * handle the card click event
+   * @param {any} e the event
+   */
   const activate = (e) => {
     if ($activeCard && $activeCard === thisCard) {
       $activeCard = undefined;
@@ -170,11 +199,19 @@
     }
   };
 
+  /**
+   * handle the card blur event
+   * @param {any} e the event
+   */
   const deactivate = (e) => {
     interactEnd();
     $activeCard = undefined;
   };
 
+  /**
+   * handle the keydown event
+   * @param {any} e the event
+   */
   const handleKeydown = (e) => {
     if (e.key === "Escape" && $activeCard && $activeCard === thisCard) {
       e.preventDefault();
@@ -183,6 +220,10 @@
     }
   };
 
+  /**
+   * handle the scroll event to reposition the active card
+   * @param {any} e the event
+   */
   const reposition = (e) => {
     clearTimeout(repositionTimer);
     repositionTimer = setTimeout(() => {
@@ -192,6 +233,9 @@
     }, 300); // Debounce delay for scroll repositioning
   };
 
+  /**
+   * calculate and set the center position for the active card
+   */
   const setCenter = () => {
     const rect = thisCard.getBoundingClientRect(); // get element's size/position
     const view = document.documentElement; // get window/viewport size
@@ -206,6 +250,9 @@
     });
   };
 
+  /**
+   * animate the card into the popover position
+   */
   const popover = () => {
     const rect = thisCard.getBoundingClientRect(); // get element's size/position
     let delay = 100;
@@ -225,6 +272,9 @@
     interactEnd(null, delay);
   };
 
+  /**
+   * animate the card back to its original position
+   */
   const retreat = () => {
     springScale.set(1, { soft: true });
     springTranslate.set({ x: 0, y: 0 }, { soft: true });
@@ -232,6 +282,9 @@
     interactEnd(null, 100);
   };
 
+  /**
+   * reset the card position and scale immediately
+   */
   const reset = () => {
     interactEnd(null, 0);
     springScale.set(1, { hard: true });
@@ -294,11 +347,21 @@
     }
   }
 
+  /**
+   * update the card orientation based on device orientation
+   * @param {any} e the orientation data
+   */
   const orientate = (e) => {
     const springUpdate = getOrientationSpringUpdate(e.relative.gamma, e.relative.beta);
     updateSprings(springUpdate.background, springUpdate.rotate, springUpdate.glare);
   };
 
+  /**
+   * update the spring values for background, rotation, and glare
+   * @param {Object} background background x/y values
+   * @param {Object} rotate rotate x/y values
+   * @param {Object} glare glare x/y/o values
+   */
   const updateSprings = ( background, rotate, glare ) => {
 
     springBackground.stiffness = springInteractSettings.stiffness;
@@ -321,12 +384,19 @@
     }
   }
 
+  /**
+   * handle the visibility change event
+   */
   const handleVisibilityChange = () => {
     isVisible = document.visibilityState === "visible";
     endShowcase();
     reset();
   };
 
+  /**
+   * handle the card image load event
+   * @param {any} e the event
+   */
   const imageLoader = (e) => {
     loading = false;
     if ( mask || foil ) {

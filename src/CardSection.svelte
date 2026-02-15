@@ -2,8 +2,11 @@
   import CardList from "./Cards.svelte";
   import Card from "./lib/components/CardProxy.svelte";
 
+  /** @type {String} */
   export let anchor;
+  /** @type {Array} */
   export let cards;
+  /** @type {Boolean} */
   export let isLoading;
 </script>
 

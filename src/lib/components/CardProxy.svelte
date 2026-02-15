@@ -4,23 +4,37 @@
 	import Card from "./Card.svelte";
 
   // data / pokemon props
+  /** @type {String} */
   export let id = undefined;
+  /** @type {String} */
   export let name = undefined;
+  /** @type {String} */
   export let number = undefined;
+  /** @type {String} */
   export let set = undefined;
+  /** @type {String|Array} */
   export let types = undefined;
+  /** @type {String|Array} */
   export let subtypes = undefined;
+  /** @type {String} */
   export let supertype = undefined;
+  /** @type {String} */
   export let rarity = undefined;
+  /** @type {Boolean} */
   export let isReverse = false;
 
   // image props
+  /** @type {String} */
   export let img = undefined;
+  /** @type {String} */
   export let back = undefined;
+  /** @type {String} */
   export let foil = undefined;
+  /** @type {String} */
   export let mask = undefined;
 
   // context/environment props
+  /** @type {Boolean} */
   export let showcase = false;
 
   const server = import.meta.env.VITE_CDN;
@@ -76,10 +90,19 @@
 
 
   
+  /**
+   * helper to check if a value is defined
+   * @param {any} v the value to check
+   * @returns {Boolean}
+   */
   function isDefined (v) {
     return typeof v !== "undefined" && v !== null;
   }
 
+  /**
+   * helper to get the card image url
+   * @returns {String}
+   */
   function cardImage () {
     if ( isDefined( img ) ) {
       return img;
@@ -90,6 +113,12 @@
     return "";
   }
   
+  /**
+   * helper to get the foil or mask image url
+   * @param {String|Boolean} prop the property to check (foil or mask)
+   * @param {String} type the type of image (foils or masks), default: "masks"
+   * @returns {String}
+   */
   function foilMaskImage ( prop, type = "masks" ) {
 
     let etch = "holo";
@@ -212,10 +241,18 @@
 
   }
 
+  /**
+   * helper to get the foil image url
+   * @returns {String}
+   */
   function foilImage () {
     return foilMaskImage( foil, "foils" );
   }
 
+  /**
+   * helper to get the mask image url
+   * @returns {String}
+   */
   function maskImage () {
     return foilMaskImage( mask, "masks" );
   }

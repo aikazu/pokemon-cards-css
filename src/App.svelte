@@ -14,12 +14,20 @@
 	let query = "";
 	let isLoading = true;
 
+	/**
+	 * fetches the cards data from the static json file
+	 * @returns {Promise<Array>}
+	 */
 	const getCards = async () => {
 		let cardFetch = await fetch("/data/cards.json");
 		let cards = await cardFetch.json();
 		return cards;
 	};
 
+	/**
+	 * loads the cards data and sets the initial state
+	 * @returns {Promise<void>}
+	 */
 	const loadCards = async () => {
 		const cards = await getCards();
 		cardsStore.set(cards);
