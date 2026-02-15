@@ -1,6 +1,6 @@
 <script>
 	import pokemon from "pokemontcgsdk";
-  import { onMount } from "svelte";
+	import { onMount } from "svelte";
 
 	import CardList from "./Cards.svelte";
 	import Card from "./lib/components/CardProxy.svelte";
@@ -13,37 +13,34 @@
 	let isError = false;
 
 	pokemon.configure({ apiKey: import.meta.env.VITE_API_KEY });
-  
-	const loadQuery = async() => {
 
-    if ( !usableQuery ) {
-      return;
-    }
+	const loadQuery = async () => {
+		if (!usableQuery) {
+			return;
+		}
 
 		loadingQuery = true;
-		clearTimeout( queryTimer );
+		clearTimeout(queryTimer);
 		queryTimer = setTimeout(() => {
-
 			const sanitizedQuery = query.replace(/['"\\()]/g, "");
 
 			pokemon.card
 
-				.where({ 
+				.where({
 					q: `( set.id:swsh* AND name:"*${sanitizedQuery}*" )`,
 					select: `id,name,number,supertype,subtypes,rarity,images,types,set`,
 					orderBy: `-set.releaseDate,-number`,
-          pageSize: 36
+					pageSize: 36,
 				})
 
-				.then(result => {
-
+				.then((result) => {
 					const cards = result.data || [];
-					
-          queryResult = [];
-          isError = false;
 
-					let cardsMap = cards.slice(0, 36).map(card => {
-						if ( card.rarity === "Common" || card.rarity === "Uncommon" ) {
+					queryResult = [];
+					isError = false;
+
+					let cardsMap = cards.slice(0, 36).map((card) => {
+						if (card.rarity === "Common" || card.rarity === "Uncommon") {
 							card.isReverse = !!Math.round(Math.random());
 						}
 						card.set = card.set.id;
@@ -52,186 +49,187 @@
 
 					queryResult = [...cardsMap];
 					loadingQuery = false;
+				})
 
-			  })
-        
-        .catch((error) => {
-          console.error("Card search failed:", error);
-          queryResult = [];
+				.catch((error) => {
+					console.error("Card search failed:", error);
+					queryResult = [];
 					loadingQuery = false;
-          isError = true;
-        });
+					isError = true;
+				});
 
-        if (typeof window.gtag === "function") {
-          window.gtag("event", "search", {
-            search_term: query
-          });
-        }
-
-
+			if (typeof window.gtag === "function") {
+				window.gtag("event", "search", {
+					search_term: query,
+				});
+			}
 		}, 666); // debounce delay before firing API search
 	};
 
-  $: usableQuery = query.length > 2;
+	$: usableQuery = query.length > 2;
 	$: query && loadQuery();
-
 </script>
 
-
-
 <section class="search-area">
+	<label for="search" class="sr-only">Search Pokemon cards</label>
+	<input
+		type="search"
+		name="search"
+		id="search"
+		bind:value={query}
+		placeholder="eg: Morpeko or Marnie"
+	/>
 
-  <label for="search" class="sr-only">Search Pokemon cards</label>
-  <input type="search" name="search" id="search" bind:value={query} placeholder="eg: Morpeko or Marnie" />
-
-  <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="1.25" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-    <path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0"></path>
-    <path d="M21 21l-6 -6"></path>
- </svg>
-
+	<svg
+		xmlns="http://www.w3.org/2000/svg"
+		class="icon icon-tabler icon-tabler-search"
+		width="24"
+		height="24"
+		viewBox="0 0 24 24"
+		stroke-width="1.25"
+		stroke="currentColor"
+		fill="none"
+		stroke-linecap="round"
+		stroke-linejoin="round"
+		aria-hidden="true"
+	>
+		<path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+		<path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0"></path>
+		<path d="M21 21l-6 -6"></path>
+	</svg>
 </section>
 
 {#if !query}
-  <h3>Browse cards below, Or search for your favourite!</h3>
+	<h3>Browse cards below, Or search for your favourite!</h3>
 {/if}
 
 {#if usableQuery && loadingQuery}
-  <h3>Fetching Cards...</h3>
+	<h3>Fetching Cards...</h3>
 {/if}
 
 {#if usableQuery && queryResult.length}
-  <CardList>
-    {#each queryResult as card, index (card.id)}
-      <Card
-        id={card.id}
-        name={card.name}
-        set={card.set}
-        number={card.number}
-        types={card.types}
-        supertype={card.supertype}
-        subtypes={card.subtypes}
-        rarity={card.rarity}
-        isReverse={card.isReverse}
-      />
-    {/each}
-  </CardList>
+	<CardList>
+		{#each queryResult as card, index (card.id)}
+			<Card
+				id={card.id}
+				name={card.name}
+				set={card.set}
+				number={card.number}
+				types={card.types}
+				supertype={card.supertype}
+				subtypes={card.subtypes}
+				rarity={card.rarity}
+				isReverse={card.isReverse}
+			/>
+		{/each}
+	</CardList>
 {/if}
 
-{#if isError || ( usableQuery && !loadingQuery && !queryResult.length )}
+{#if isError || (usableQuery && !loadingQuery && !queryResult.length)}
+	<h3>Error: No cards found with that name.</h3>
 
-  <h3>Error: No cards found with that name.</h3>
-
-  <CardList>
-    <Card 
-      id="basep-16"
-      name="Computer Error"
-      set="basep"
-      number="16"
-      img="https://images.pokemontcg.io/basep/16_hires.png"
-      supertype="Trainer"
-      subtypes="Rocket's Secret Machine"
-      rarity="Promo"
-      isReverse={false}
-    />
-  </CardList>
-
+	<CardList>
+		<Card
+			id="basep-16"
+			name="Computer Error"
+			set="basep"
+			number="16"
+			img="https://images.pokemontcg.io/basep/16_hires.png"
+			supertype="Trainer"
+			subtypes="Rocket's Secret Machine"
+			rarity="Promo"
+			isReverse={false}
+		/>
+	</CardList>
 {/if}
-
-
 
 <style>
+	.search-area {
+		font-size: 18px;
+		display: grid;
+		place-items: center start;
+		max-width: 500px;
+		margin: 120px 0 10px;
+		padding: 5px;
+		position: sticky;
+		top: 10px;
+		border-radius: 0.66em;
+		backdrop-filter: blur(5px);
+		z-index: 999;
+	}
 
-  .search-area {
-    
-    font-size: 18px;
-    display: grid;
-    place-items: center start;
-    max-width: 500px;
-    margin: 120px 0 10px;
-    padding: 5px;
-    position: sticky;
-    top: 10px;
-    border-radius: .66em;
-    backdrop-filter: blur(5px);
-    z-index: 999;
+	.sr-only {
+		position: absolute;
+		width: 1px;
+		height: 1px;
+		padding: 0;
+		margin: -1px;
+		overflow: hidden;
+		clip: rect(0, 0, 0, 0);
+		white-space: nowrap;
+		border-width: 0;
+	}
 
-  }
+	@media screen and (min-width: 900px) {
+		.search-area {
+			margin: 120px 50px 0;
+			font-size: 22px;
+		}
+		h3 {
+			margin-inline: 60px;
+		}
+	}
 
-  .sr-only {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    padding: 0;
-    margin: -1px;
-    overflow: hidden;
-    clip: rect(0, 0, 0, 0);
-    white-space: nowrap;
-    border-width: 0;
-  }
+	input {
+		font-family: Roboto;
+		font-size: inherit;
+		border: 1px solid rgba(255, 255, 255, 0.1);
+		border-radius: 0.5em;
+		padding: 0.5em 2em 0.5em 0.75em;
+		margin: 0;
+		background: hsla(220, 7%, 17%, 0.66);
+		color: white;
+		outline: none;
+		transition: all 0.5s ease;
+		box-shadow:
+			0 5px 20px hsla(220, 7%, 20%, 0.75),
+			0 5px 10px hsla(220, 7%, 20%, 0.75);
 
-  @media screen and ( min-width: 900px ) {
-    .search-area {
-      margin: 120px 50px 0;
-      font-size: 22px;
-    }
-    h3 {
-      margin-inline: 60px;
-    }
-  }
+		grid-row: 1;
+		grid-column: 1;
+		width: 100%;
+	}
 
-  input {
-    
-    font-family: Roboto;
-    font-size: inherit;
-    border: 1px solid rgba(255,255,255,0.1);
-    border-radius: .5em;
-    padding: .5em 2em .5em .75em;
-    margin: 0;
-    background: hsla(220, 7%, 17%, .66);
-    color: white;
-    outline: none;
-    transition: all 0.5s ease;
-    box-shadow: 0 5px 20px hsla(220, 7%, 20%, .75), 0 5px 10px hsla(220, 7%, 20%, .75);
+	input:active,
+	input:focus,
+	input:hover {
+		background: hsla(220, 7%, 17%, 0.88);
+	}
 
-    grid-row: 1;
-    grid-column: 1;
-    width: 100%;
+	input:active,
+	input:focus {
+		border: 1px solid var(--primary);
+	}
 
-  }
+	.icon-tabler-search {
+		grid-row: 1;
+		grid-column: 1;
+		place-self: center end;
+		margin-right: 10px;
+		opacity: 0.5;
+		transition: all 0.5s ease;
+	}
 
-  input:active,
-  input:focus,
-  input:hover {
-    background: hsla(220, 7%, 17%, .88);
-  }
+	input:active + .icon,
+	input:focus + .icon,
+	input:hover + .icon {
+		opacity: 0.2;
+	}
 
-  input:active,
-  input:focus {
-    border: 1px solid var(--primary);
-  }
-
-  .icon-tabler-search {
-    grid-row: 1;
-    grid-column: 1;
-    place-self: center end;
-    margin-right: 10px;
-    opacity: 0.5;
-    transition: all 0.5s ease;
-  }
-
-  input:active + .icon,
-  input:focus + .icon,
-  input:hover + .icon {
-    opacity: 0.2;
-  }
-
-  h3 {
-    font-family: Roboto;
-    font-size: inherit;
-    font-weight: normal;
-    margin-block: 10px;
-  }
-  
-
+	h3 {
+		font-family: Roboto;
+		font-size: inherit;
+		font-weight: normal;
+		margin-block: 10px;
+	}
 </style>
