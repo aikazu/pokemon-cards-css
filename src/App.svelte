@@ -328,10 +328,10 @@
 				</a>
 			</h2>
 			<p>
-				Again back to the <mark>diagonal gradients overlaying a texture</mark>, VStar are quite
-				<mark>similar to the Ultra Rare</mark>
-				(Full/Alt) cards. The cards are generally <mark>brighter with a pastel hue</mark>, though, which
-				makes the gradient and texture more subtle.
+				Trainer Gallery Full Art cards use similar effects to the V cards, with
+				<mark>diagonal holographic gradients</mark>
+				and <mark>textured overlays</mark>. These full art trainers have a
+				<mark>slightly more subtle and refined effect</mark>, appropriate for the character illustrations.
 			</p>
 		</CardSection>
 
